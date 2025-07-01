@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
-import { Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { signInSchema } from "@/schemas/signInSchema";
 
 export default function SignInForm() {
@@ -58,19 +59,26 @@ export default function SignInForm() {
         console.error("Sign-in incomplete:", result);
         setAuthError("Sign-in could not be completed. Please try again.");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Sign-in error:", error);
-      setAuthError(
-        error.errors?.[0]?.message ||
-          "An error occurred during sign-in. Please try again."
-      );
+
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "errors" in error &&
+        Array.isArray((error as any).errors)
+      ) {
+        setAuthError((error as any).errors?.[0]?.message);
+      } else {
+        setAuthError("An error occurred during sign-in. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md justify-center items center border bg-muted shadow-xl">
+    <Card className="w-full max-w-md border bg-muted shadow-xl">
       <CardHeader className="flex flex-col gap-1 items-center pb-2">
         <h1 className="text-2xl font-bold">Welcome Back</h1>
         <p className="text-muted-foreground text-center">
@@ -145,7 +153,7 @@ export default function SignInForm() {
       <Separator />
 
       <CardFooter className="flex justify-center py-4 text-sm text-muted-foreground">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link href="/sign-up" className="ml-1 text-primary hover:underline font-medium">
           Sign up
         </Link>
