@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "react-hot-toast";
-import { Upload, X, FileUp, AlertTriangle, FolderPlus, ArrowRight } from "lucide-react";
+import { X, FileUp, AlertTriangle, FolderPlus, ArrowRight } from "lucide-react";
 import axios from "axios";
 
 interface FileUploadFormProps {
