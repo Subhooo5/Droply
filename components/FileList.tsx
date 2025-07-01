@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import { Folder, Star, Trash, X, ExternalLink, Download } from "lucide-react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { Folder, Star, Trash, X, ExternalLink } from "lucide-react";
 import axios from "axios";
 import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { format } from "date-fns";
 import toast, { Toaster } from "react-hot-toast";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -16,7 +16,6 @@ import FolderNavigation from "@/components/FolderNavigation";
 import FileActionButtons from "@/components/FileActionButtons";
 import FileEmptyState from "@/components/FileEmptyState";
 import FileActions from "@/components/FileActions";
-import Fileicon from "@/components/FileIcon";
 import FileLoadingState from "@/components/FileLoadingState";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
@@ -40,7 +39,7 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
   const [emptyTrashModalOpen, setEmptyTrashModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<FileType | null>(null);
 
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     setLoading(true);
     try {
       let url = `/api/files?userId=${userId}`;
@@ -52,11 +51,11 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, currentFolder]);
 
   useEffect(() => {
     fetchFiles();
-  }, [userId, refreshTrigger, currentFolder]);
+  }, [fetchFiles, refreshTrigger]);
 
   const filteredFiles = useMemo(() => {
     return files.filter(file =>
@@ -82,7 +81,6 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
 
   const handleTrashFile = async (id: string) => {
     try {
-      const file = files.find(f => f.id === id);
       const resp = await axios.patch(`/api/files/${id}/trash`);
       setFiles(fs => fs.map(f => f.id === id ? { ...f, isTrash: resp.data.isTrash } : f));
       toast.success(resp.data.isTrash ? "Moved to Trash" : "Restored from Trash");
@@ -93,7 +91,6 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
 
   const handleDeleteFile = async (id: string) => {
     try {
-      const file = files.find(f => f.id === id);
       const resp = await axios.delete(`/api/files/${id}/delete`);
       if (resp.data.success) {
         setFiles(fs => fs.filter(f => f.id !== id));
@@ -148,16 +145,16 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
   const navigateUp = () => {
     const p = [...folderPath];
     p.pop();
-    setFolderPath(p);
     const parentId = p.length ? p[p.length - 1].id : null;
+    setFolderPath(p);
     setCurrentFolder(parentId);
     onFolderChange?.(parentId);
   };
 
   const navigateToPathFolder = (idx: number) => {
     const p = folderPath.slice(0, idx + 1);
-    setFolderPath(p);
     const id = p[p.length - 1]?.id ?? null;
+    setFolderPath(p);
     setCurrentFolder(id);
     onFolderChange?.(id);
   };
@@ -224,9 +221,7 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
                 <TableRow
                   key={file.id}
                   onClick={() => handleItemClick(file)}
-                  className={`hover:bg-muted cursor-pointer ${
-                    !(file.isFolder || file.type.startsWith("image/")) && ""
-                  }`}
+                  className="hover:bg-muted cursor-pointer"
                 >
                   <TableCell>
                     <div className="flex items-center gap-3">
@@ -289,7 +284,7 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
                       file={file}
                       onStar={handleStarFile}
                       onTrash={handleTrashFile}
-                      onDelete={file => {
+                      onDelete={() => {
                         setSelectedFile(file);
                         setDeleteModalOpen(true);
                       }}
@@ -322,6 +317,9 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
         confirmColor="destructive"
         onConfirm={handleEmptyTrash}
       />
+    </div>
+  );
+}
     </div>
   );
 }
