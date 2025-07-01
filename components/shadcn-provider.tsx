@@ -2,27 +2,15 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Toaster } from "react-hot-toast";
 
 interface ShadcnProviderProps {
   children: React.ReactNode;
-  navigate?: (href: string, options?: any) => void;
+  navigate?: (href: string, options?: Record<string, unknown>) => void;
 }
 
-export function ShadcnProvider({ children, navigate }: ShadcnProviderProps) {
+export function ShadcnProvider({ children }: ShadcnProviderProps) {
   const router = useRouter();
 
-  const handleNavigate = (href: string, options?: any) => {
-    if (navigate) {
-      navigate(href, options);
-    } else {
-      router.push(href);
-    }
-  };
 
-  return (
-      <div>
-        {children}
-      </div>
-  );
+  return <div>{children}</div>;
 }
