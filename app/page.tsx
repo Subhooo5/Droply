@@ -100,7 +100,7 @@ export default function Home() {
             <SignedOut>
               <Link href="/sign-up">
                 <Button size="lg">
-                  Let's Go <ArrowRight className="h-4 w-4 ml-2" />
+                  Let&apos;s Go <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
             </SignedOut>
