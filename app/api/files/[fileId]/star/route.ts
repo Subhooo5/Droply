@@ -44,7 +44,7 @@ export async function PATCH(request: NextRequest, props: {params: Promise< {file
 
         const updatedFile = updatedFiles[0]
         return NextResponse.json(updatedFile)
-    } catch (error) {
+    } catch{
         return NextResponse.json({error: "Failed to update the file"}, {status: 500})
     }
 }
