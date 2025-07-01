@@ -19,8 +19,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import {
-  Mail,
-  Lock,
   AlertCircle,
   CheckCircle,
   Eye,
@@ -69,12 +67,18 @@ export default function SignUpForm() {
 
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setVerifying(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Sign-up error:", error);
-      setAuthError(
-        error.errors?.[0]?.message ||
-          "An error occurred during sign-up. Please try again."
-      );
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "errors" in error &&
+        Array.isArray((error as any).errors)
+      ) {
+        setAuthError((error as any).errors[0]?.message);
+      } else {
+        setAuthError("An error occurred during sign-up. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -103,12 +107,18 @@ export default function SignUpForm() {
           "Verification could not be completed. Please try again."
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Verification error:", error);
-      setVerificationError(
-        error.errors?.[0]?.message ||
-          "An error occurred during verification. Please try again."
-      );
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "errors" in error &&
+        Array.isArray((error as any).errors)
+      ) {
+        setVerificationError((error as any).errors[0]?.message);
+      } else {
+        setVerificationError("An error occurred during verification. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -120,7 +130,7 @@ export default function SignUpForm() {
         <CardHeader className="flex flex-col gap-1 items-center pb-2">
           <h1 className="text-2xl font-bold">Verify Your Email</h1>
           <p className="text-muted-foreground text-center">
-            We've sent a verification code to your email
+            We&apos;ve sent a verification code to your email
           </p>
         </CardHeader>
 
@@ -136,10 +146,7 @@ export default function SignUpForm() {
 
           <form onSubmit={handleVerificationSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label
-                htmlFor="verificationCode"
-                className="text-sm font-medium"
-              >
+              <label htmlFor="verificationCode" className="text-sm font-medium">
                 Verification Code
               </label>
               <Input
@@ -158,7 +165,7 @@ export default function SignUpForm() {
           </form>
 
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            Didn't receive a code?{" "}
+            Didn&apos;t receive a code?{" "}
             <button
               onClick={async () => {
                 if (signUp) {
@@ -178,7 +185,7 @@ export default function SignUpForm() {
   }
 
   return (
-    <Card className="w-full justify-center items center max-w-md border bg-muted shadow-xl">
+    <Card className="w-full justify-center items-center max-w-md border bg-muted shadow-xl">
       <CardHeader className="flex flex-col gap-1 items-center pb-2">
         <h1 className="text-2xl font-bold">Create Your Account</h1>
         <p className="text-muted-foreground text-center">
@@ -282,7 +289,7 @@ export default function SignUpForm() {
           </div>
 
           <div id="clerk-captcha" className="my-4" />
-          
+
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? "Creating account..." : "Create Account"}
           </Button>
