@@ -320,6 +320,3 @@ export default function FileList({ userId, refreshTrigger = 0, onFolderChange }:
     </div>
   );
 }
-    </div>
-  );
-}
