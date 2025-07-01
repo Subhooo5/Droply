@@ -1,8 +1,6 @@
 "use client"
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Providers } from "./providers";
 import "../app/globals.css";
 import { ImageKitProvider } from "imagekitio-next";
 
