@@ -185,7 +185,7 @@ export default function SignUpForm() {
   }
 
   return (
-    <Card className="w-full justify-center items-center max-w-md border bg-muted shadow-xl">
+    <Card className="w-full max-w-md border bg-muted shadow-xl">
       <CardHeader className="flex flex-col gap-1 items-center pb-2">
         <h1 className="text-2xl font-bold">Create Your Account</h1>
         <p className="text-muted-foreground text-center">
